@@ -5,13 +5,33 @@ import bcrypt from 'bcrypt'
 import randtoken from 'rand-token'
 <%_ } _%>
 <%_ } _%>
-import mongoose, { Schema } from 'mongoose'
+import mongoose, { Schema, Model } from 'mongoose'
 import mongooseKeywords from 'mongoose-keywords'
 <%_ if (passwordSignup) { _%>
-import { env } from '../../config'
+import config from '../../config'
 <%_ } _%>
 
 const roles = ['user', 'admin']
+
+interface User extends mongoose.Document  {
+  name: string;
+  email: string;
+  <%_ if (passwordSignup) { _%>
+  password: string;
+  <%_ } _%>
+  <%_ if (authServices.length) { _%>
+  services: { [key: string]: string; };
+  <%_ } _%>
+  role: string;
+  picture: string;
+  authenticate(password: string): Promise<Boolean>;
+  [key:string]: any;
+}
+
+interface UserModel extends Model<User> {
+  createFromService(user: any): Promise<any>;
+  [key: string]: any;
+}
 
 const userSchema = new Schema({
   email: {
@@ -54,14 +74,15 @@ const userSchema = new Schema({
   timestamps: true
 })
 
-userSchema.path('email').set(function (email) {
-  if (!this.picture || this.picture.indexOf('https://gravatar.com') === 0) {
+userSchema.path('email').set( (email: string) => {
+  const that:any = this;
+  if (!that.picture || that.picture.indexOf('https://gravatar.com') === 0) {
     const hash = crypto.createHash('md5').update(email).digest('hex')
-    this.picture = `https://gravatar.com/avatar/${hash}?d=identicon`
+    that.picture = `https://gravatar.com/avatar/${hash}?d=identicon`
   }
 
-  if (!this.name) {
-    this.name = email.replace(/^(.+)@.+$/, '$1')
+  if (!that.name) {
+    that.name = email.replace(/^(.+)@.+$/, '$1')
   }
 
   return email
@@ -83,7 +104,7 @@ userSchema.pre('save', function (next) {
 <%_ } _%>
 userSchema.methods = {
   view (full) {
-    const view = {}
+    const view: { [key: string]: any; } = {}
     let fields = ['id', 'name', 'picture']
 
     if (full) {
