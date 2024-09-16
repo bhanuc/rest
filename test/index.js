@@ -1,5 +1,6 @@
+// @ts-check
 'use strict';
-var Promise = require('bluebird');
+// var Promise = require('bluebird');
 var path = require('path');
 var fs = require('fs-extra');
 var spawnCommand = require('yeoman-generator/lib/actions/spawn_command').spawnCommand;

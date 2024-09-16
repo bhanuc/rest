@@ -16,7 +16,7 @@ module.exports = yeoman.Base.extend({
     return this.prompt([{
       type: 'input',
       name: 'name',
-      message: 'What\'s the project name?',
+      message: 'What\'s your project name?',
       default: _.startCase(this.appname)
     }, {
       type: 'input',
@@ -126,7 +126,7 @@ module.exports = yeoman.Base.extend({
     copyTpl(tPath('src'), dPath(props.srcDir), props);
     copyTpl(tPath('test'), dPath('test'), props);
     copyTpl(tPath('services/response'), dPath(props.srcDir + '/services/response'), props);
-    copyTpl(tPath('api/index.js'), dPath(props.srcDir + '/' + props.apiDir + '/index.js'), props);
+    copyTpl(tPath('api/index.ts'), dPath(props.srcDir + '/' + props.apiDir + '/index.ts'), props);
 
     if (props.generateAuthApi) {
       copyTpl(tPath('services/passport'), dPath(props.srcDir + '/services/passport'), props);
